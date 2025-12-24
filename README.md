@@ -1,75 +1,114 @@
-# React + TypeScript + Vite
+# Django + React Hybrid Template
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules. We follow ([this guide](https://www.saaspegasus.com/guides/modern-javascript-for-django-developers/integrating-javascript-pipeline-vite/#how-hot-module-replacement-works-with-vite-and-django-vite))
+A modern, integrated web application template using **Django** for the backend/hosting and **React (Vite)** for the interactive frontend.
 
-Currently, two official plugins are available:
+## 🏗 Architecture Overview
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+This project uses the **Integrated (Hybrid)** approach:
 
-## React Compiler
+- **Django** acts as the primary server and handles routing, authentication, and SEO.
+- **Vite** manages the frontend assets (React, Tailwind CSS) and compiles them into Django's static files.
+- **Django-Vite** bridge provides Hot Module Replacement (HMR) during development.
 
-The React Compiler is enabled on this template. See [this documentation](https://react.dev/learn/react-compiler) for more information.
+---
 
-Note: This will impact Vite dev & build performances.
+## 🚀 Getting Started
 
-## Expanding the ESLint configuration
+### Prerequisites
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- [uv](https://github.com/astral-sh/uv) (Python package manager)
+- [Node.js & npm](https://nodejs.org/)
 
-```js
-export default defineConfig([
-    globalIgnores(['dist']),
-    {
-        files: ['**/*.{ts,tsx}'],
-        extends: [
-            // Other configs...
+### 1. Backend Setup (Django)
 
-            // Remove tseslint.configs.recommended and replace with this
-            tseslint.configs.recommendedTypeChecked,
-            // Alternatively, use this for stricter rules
-            tseslint.configs.strictTypeChecked,
-            // Optionally, add this for stylistic rules
-            tseslint.configs.stylisticTypeChecked,
+```bash
+# Install Python dependencies
+uv sync
 
-            // Other configs...
-        ],
-        languageOptions: {
-            parserOptions: {
-                project: ['./tsconfig.node.json', './tsconfig.app.json'],
-                tsconfigRootDir: import.meta.dirname,
-            },
-            // other options...
-        },
-    },
-]);
+# Run migrations
+uv run manage.py migrate
+
+# Start Django server
+uv run manage.py runserver
+
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### 2. Frontend Setup (React + Vite)
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x';
-import reactDom from 'eslint-plugin-react-dom';
+In a new terminal:
 
-export default defineConfig([
-    globalIgnores(['dist']),
-    {
-        files: ['**/*.{ts,tsx}'],
-        extends: [
-            // Other configs...
-            // Enable lint rules for React
-            reactX.configs['recommended-typescript'],
-            // Enable lint rules for React DOM
-            reactDom.configs.recommended,
-        ],
-        languageOptions: {
-            parserOptions: {
-                project: ['./tsconfig.node.json', './tsconfig.app.json'],
-                tsconfigRootDir: import.meta.dirname,
-            },
-            // other options...
-        },
-    },
-]);
+```bash
+# Install JS dependencies
+npm install
+
+# Start Vite development server (HMR)
+npm run dev
+
+```
+
+The app will be available at `http://127.0.0.1:8000/`.
+
+---
+
+## 🛠 Development vs Production
+
+### Development Mode
+
+- Set `dev_mode: True` in `settings.py` (inside the `DJANGO_VITE` config).
+- Keep **both** `uv run manage.py runserver` and `npm run dev` running.
+- **Benefit:** Instant browser updates when you save React or CSS files.
+
+### Production Mode
+
+To run the app as a single unit without the Vite dev server:
+
+1. **Build the assets:**
+
+```bash
+npm run build
+
+```
+
+2. **Switch Django to Production:**
+   In `settings.py`, set `"dev_mode": False` within the `DJANGO_VITE` dictionary.
+3. **Collect Static Files:**
+
+```bash
+uv run manage.py collectstatic
+
+```
+
+4. **Run Server:**
+   Only `uv run manage.py runserver` is required now.
+
+---
+
+## 📁 Project Structure
+
+- `/my_site`: Django project configuration and settings.
+- `/assets`: Source React components and CSS (Tailwind).
+- `/templates`: Django HTML templates (where React is injected).
+- `/staticfiles`: Compiled production assets (generated by Vite).
+- `vite.config.js`: Configuration for asset bundling and manifest generation.
+
+---
+
+## ⚠️ Common Troubleshooting
+
+### DjangoViteAssetNotFoundError
+
+If Django cannot find your assets in production mode:
+
+1. Check `staticfiles/manifest.json`.
+2. Ensure the path in your `{% vite_asset '...' %}` tag exactly matches the **key** in the manifest.
+3. Verify that `npm run build` completed successfully.
+
+### Command Chaining
+
+To start everything quickly in development (on Bash/Zsh):
+
+```bash
+# Run migrations and start server only if migrations succeed
+uv run manage.py migrate && uv run manage.py runserver
+
 ```

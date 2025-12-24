@@ -1,6 +1,7 @@
 # Build directories
 dist/
 node_modules/
+templates/
 
 # Lock files (let npm/yarn manage them)
 package-lock.json

@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite';
 import path from 'path';
 import react from '@vitejs/plugin-react';
+import tailwindcss from '@tailwindcss/vite';
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -15,10 +16,12 @@ export default defineConfig({
             input: {
                 'index': path.resolve(__dirname, './assets/js/index.js'),
                 'hello': path.resolve(__dirname, './assets/js/hello.jsx'),
+                'style': path.resolve(__dirname, './assets/css/style.css'),
             },
             output: {
                 // Output JS bundles to js/ directory with -bundle suffix
                 entryFileNames: `js/[name]-bundle.js`,
+                assetFileNames: `css/[name].css`,
             },
         },
     },
@@ -28,5 +31,5 @@ export default defineConfig({
                 plugins: [['babel-plugin-react-compiler']],
             },
         }),
-    ],
+    tailwindcss(),],
 });
