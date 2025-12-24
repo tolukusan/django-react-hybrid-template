@@ -13,7 +13,8 @@ export default defineConfig({
         manifest: 'manifest.json',
         rollupOptions: {
             input: {
-                index: path.resolve(__dirname, './assets/js/index.js'),
+                'index': path.resolve(__dirname, './assets/js/index.js'),
+                'hello': path.resolve(__dirname, './assets/js/hello.jsx'),
             },
             output: {
                 // Output JS bundles to js/ directory with -bundle suffix
